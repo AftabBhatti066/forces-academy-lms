@@ -8,9 +8,10 @@ if (!isset($_SESSION['student_id'])) {
 }
 
 $studentName = $_SESSION['student_name'];
+$current_page = basename($_SERVER['PHP_SELF']);
 
 // 2. Database Connection Include
-require_once 'config/db.php'; // Apni DB file ka naam verify kar lein
+require_once 'config/db.php'; 
 
 // 3. Courses Fetch Query (Step 3 - Req 10)
 $query = "SELECT * FROM courses ORDER BY id DESC";
@@ -33,6 +34,7 @@ $result = mysqli_query($conn, $query);
             background: #f8f9fa;
         }
 
+        /* Desktop Sidebar Setup */
         .sidebar {
             position: fixed;
             top: 0;
@@ -42,6 +44,8 @@ $result = mysqli_query($conn, $query);
             background: #0d6efd;
             color: #fff;
             padding-top: 20px;
+            z-index: 1000;
+            transition: all 0.3s ease;
         }
 
         .sidebar h3 {
@@ -70,6 +74,7 @@ $result = mysqli_query($conn, $query);
         .content {
             margin-left: 250px;
             padding: 30px;
+            transition: all 0.3s ease;
         }
 
         .course-card {
@@ -83,33 +88,102 @@ $result = mysqli_query($conn, $query);
             transform: translateY(-5px);
             box-shadow: 0 8px 20px rgba(0,0,0,.12);
         }
+
+        .mobile-header {
+            display: none;
+        }
+
+        /* Responsive Media Queries */
+        @media (max-width: 991.98px) {
+            .mobile-header {
+                display: flex;
+                background: #0d6efd;
+                color: #fff;
+                padding: 12px 20px;
+                align-items: center;
+                justify-content: space-between;
+                position: sticky;
+                top: 0;
+                z-index: 1050;
+            }
+
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+                min-height: auto;
+                padding-top: 0;
+                display: none;
+            }
+
+            .sidebar.show {
+                display: block;
+            }
+
+            .sidebar h3 {
+                display: none;
+            }
+
+            .content {
+                margin-left: 0 !important;
+                padding: 15px;
+            }
+        }
+
+        @media (max-width: 575.98px) {
+            .content h2 {
+                font-size: 1.5rem;
+            }
+
+            .course-card .card-title {
+                font-size: 1.25rem;
+            }
+        }
     </style>
 </head>
 <body>
 
-<div class="sidebar">
-    <h3>Forces LMS</h3>
+<!-- Mobile Screen Top Header Bar -->
+<div class="mobile-header">
+    <h4 class="m-0 fw-bold fs-5">Student Portal</h4>
+    <button class="btn btn-outline-light btn-sm" type="button" id="sidebarToggle">
+        <i class="bi bi-list fs-4"></i>
+    </button>
+</div>
 
-    <a href="dashboard.php">
-        <i class="bi bi-speedometer2"></i> Dashboard
+<!-- Sidebar Menu -->
+<div class="sidebar" id="sidebarMenu">
+    <h3>Student Portal</h3>
+    <a href="dashboard.php" class="<?php echo ($current_page == 'dashboard.php') ? 'active' : ''; ?>">
+        <i class="bi bi-speedometer2 me-2"></i> Dashboard
     </a>
-    <a href="courses.php" class="active">
-        <i class="bi bi-book"></i> My Courses
+    <a href="courses.php" class="<?php echo ($current_page == 'courses.php') ? 'active' : ''; ?>">
+        <i class="bi bi-book me-2"></i> My Courses
     </a>
-    <a href="assignments.php">
-        <i class="bi bi-journal-text"></i> Assignments
+    <a href="assignments.php" class="<?php echo ($current_page == 'assignments.php') ? 'active' : ''; ?>">
+        <i class="bi bi-journal-text me-2"></i> Assignments
     </a>
-    <a href="results.php">
-        <i class="bi bi-bar-chart"></i> My Results
+    <a href="timetable.php" class="<?php echo ($current_page == 'timetable.php') ? 'active' : ''; ?>">
+        <i class="bi bi-calendar-week me-2"></i> Timetable
     </a>
-    <a href="notices.php">
-        <i class="bi bi-megaphone"></i> Notices
+    <a href="fees.php" class="<?php echo ($current_page == 'fees.php') ? 'active' : ''; ?>">
+        <i class="bi bi-cash-stack me-2"></i> Fee Details
     </a>
-    <a href="logout.php">
-        <i class="bi bi-box-arrow-right"></i> Logout
+    <a href="notices.php" class="<?php echo ($current_page == 'notices.php') ? 'active' : ''; ?>">
+        <i class="bi bi-megaphone me-2"></i> Notice Board
+    </a>
+    <a href="results.php" class="<?php echo ($current_page == 'results.php') ? 'active' : ''; ?>">
+        <i class="bi bi-award me-2"></i> Results
+    </a>
+    <a href="profile.php" class="<?php echo ($current_page == 'profile.php') ? 'active' : ''; ?>">
+        <i class="bi bi-person-circle me-2"></i> Profile
+    </a>
+    <a href="logout.php" class="text-warning mt-4">
+        <i class="bi bi-box-arrow-right me-2"></i> Logout
     </a>
 </div>
 
+<!-- Main Content Area -->
 <div class="content">
 
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -165,5 +239,18 @@ $result = mysqli_query($conn, $query);
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // Mobile Burger Menu Toggle
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const sidebarMenu = document.getElementById('sidebarMenu');
+
+    if (sidebarToggle && sidebarMenu) {
+        sidebarToggle.addEventListener('click', () => {
+            sidebarMenu.classList.toggle('show');
+        });
+    }
+</script>
+
 </body>
 </html>
